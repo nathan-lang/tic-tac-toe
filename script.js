@@ -6,14 +6,12 @@ let b = (function gameboard() {
   ];
 
   const winsDiagonally = (board) => {
-    console.log("diagonally function:", board);
     if (
       board[0][0] == board[1][1] &&
       board[1][1] == board[2][2] &&
       board[0][0] == board[2][2] &&
       board[0][0] != 0
     ) {
-      alert(board[0][0] + " wins!");
       if (board[0][0] == 1) {
         return "X";
       } else if (board[0][0] == 2) {
@@ -25,7 +23,6 @@ let b = (function gameboard() {
       board[2][0] == board[0][2] &&
       board[2][0] != 0
     ) {
-      alert(board[2][0] + " wins!");
       if (board[2][0] == 1) {
         return "X";
       } else if (board[2][0] == 2) {
@@ -34,9 +31,44 @@ let b = (function gameboard() {
     }
     return "";
   };
+
+  const winsHorizontally = (board) => {
+    for (let i = 0; i < board.length; i++) {
+      if (board[i].every((val) => val == board[i][0] && val != 0)) {
+        if (board[i][0] == 1) {
+          return "X";
+        } else if (board[i][0] == 2) {
+          return "O";
+        }
+      }
+    }
+    return "";
+  };
+
+  const winsVertically = (board) => {
+    for (let i = 0; i < board.length; i++) {
+      colHasSameNumbers = true;
+      for (let j = 0; j < board[i].length; j++) {
+        if (board[j][i] != board[0][i]) {
+          colHasSameNumbers = false;
+        }
+      }
+      if (colHasSameNumbers) {
+        if (board[0][i] == 1) {
+          return "X";
+        } else if (board[0][i] == 2) {
+          return "O";
+        }
+      }
+    }
+    return "";
+  };
+
   return {
     board,
     winsDiagonally,
+    winsHorizontally,
+    winsVertically,
   };
 })();
 
@@ -59,7 +91,6 @@ for (let i = 0; i < 3; i++) {
       if (turnIndicator === "X") {
         if (b.board[i][j] == 0) {
           b.board[i][j] = 1;
-          console.log(b.board);
           piece.textContent = "X";
           turn.textContent = "O's turn.";
           turnIndicator = "O";
@@ -69,7 +100,6 @@ for (let i = 0; i < 3; i++) {
       } else if (turnIndicator === "O") {
         if (b.board[i][j] == 0) {
           b.board[i][j] = 2;
-          console.log(b.board);
           piece.textContent = "O";
           turn.textContent = "X's turn.";
           turnIndicator = "X";
@@ -77,8 +107,26 @@ for (let i = 0; i < 3; i++) {
           alert("This position is taken! Choose a different one.");
         }
       }
-      winningPlayer = b.winsDiagonally(b.board);
-      console.log(winningPlayer + " wins! The board will now clear.");
+      diagonalWin = b.winsDiagonally(b.board);
+      horizontalWin = b.winsHorizontally(b.board);
+      verticalWin = b.winsVertically(b.board);
+      if (diagonalWin.length != 0) {
+        alert(
+          diagonalWin + " won diagonally! Game over. The board will now clear."
+        );
+        location.reload();
+      } else if (horizontalWin.length != 0) {
+        alert(
+          horizontalWin +
+            " won horizontally! Game over. The board will now clear."
+        );
+        location.reload();
+      } else if (verticalWin.length != 0) {
+        alert(
+          verticalWin + " won vertically! Game over. The board will now clear."
+        );
+        location.reload();
+      }
     });
     game.appendChild(piece);
   }
